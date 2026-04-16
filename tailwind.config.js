@@ -7,6 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        'fire-red': '#DC2626',
+        'fire-yellow': '#F59E0B',
+        'dark-bg': '#1C1917',
         'poultry-red': '#DC2626',
         'poultry-dark': '#1C1917',
         'poultry-gold': '#F59E0B',
