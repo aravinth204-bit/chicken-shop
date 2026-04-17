@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
-import { storageService } from '../services/storageService';
+import Logo from './Logo';
 
 function Footer() {
   return (
@@ -8,14 +8,8 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-fire-red to-red-700 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-3xl">🍗</span>
-              </div>
-              <div>
-                <h3 className="font-bold text-2xl text-white">Chicken Sea</h3>
-                <p className="text-fire-red text-sm">Poultry Shop</p>
-              </div>
+            <div className="mb-6">
+              <Logo size="md" />
             </div>
             <p className="text-amber-100/60 mb-6 max-w-md">
               Your trusted source for fresh poultry, meat, and eggs in Erode. We deliver premium quality products directly from farm to your table.

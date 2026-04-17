@@ -18,7 +18,9 @@ function AdminPreview() {
             >
               {/* Sidebar Mock */}
               <div className="absolute left-0 top-0 bottom-0 w-16 md:w-20 bg-stone-950 border-r border-white/5 flex flex-col items-center py-6 gap-8">
-                <div className="w-10 h-10 rounded-xl bg-fire-red flex items-center justify-center text-white font-bold">C</div>
+                <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
+                  <img src="/logo-icon.png" alt="Logo" className="w-full h-full object-cover" />
+                </div>
                 <LayoutDashboard className="w-6 h-6 text-fire-red" />
                 <ShoppingCart className="w-6 h-6 text-white/20" />
                 <Package className="w-6 h-6 text-white/20" />

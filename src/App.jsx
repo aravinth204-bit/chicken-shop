@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Hero from './components/Hero';
+import Logo from './components/Logo';
 import Menu from './components/Menu';
 import Cart from './components/Cart';
 import Location from './components/Location';
@@ -106,11 +107,8 @@ function App() {
       }`}>
         <div className="max-w-7xl mx-auto px-3 md:px-6 py-2 md:py-3 flex justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center gap-1.5 md:gap-2">
-            <span className="text-2xl md:text-3xl">🍗</span>
-            <span className="font-display font-black text-lg md:text-3xl text-red-500 leading-none">
-              {shopSettings.shopName}
-            </span>
+          <div className="flex items-center">
+            <Logo size={scrolled ? 'sm' : 'sm'} />
           </div>
 
           {/* Nav Actions */}
