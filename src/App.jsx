@@ -4,6 +4,11 @@ import Menu from './components/Menu';
 import Cart from './components/Cart';
 import Location from './components/Location';
 import Footer from './components/Footer';
+import TrustBadges from './components/TrustBadges';
+import WhatsAppFloatingButton from './components/WhatsAppFloatingButton';
+import BackToTopButton from './components/BackToTopButton';
+import AnnouncementBanner from './components/AnnouncementBanner';
+import CartSuccessAnimation from './components/CartSuccessAnimation';
 import { storageService } from './services/storageService';
 import { initializeDatabase } from './services/initDb';
 
@@ -13,6 +18,7 @@ function App() {
   const [menuItems, setMenuItems] = useState([]);
   const [shopSettings, setShopSettings] = useState({ shopName: 'Chicken Sea', bannerUrl: '' });
   const [loading, setLoading] = useState(true);
+  const [showCartSuccess, setShowCartSuccess] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
@@ -40,6 +46,7 @@ function App() {
       }
       return [...prev, { ...item, quantity: 1, selectedWeight: weight }];
     });
+    setShowCartSuccess(true);
   };
 
   const removeFromCart = (itemId) => {
@@ -67,8 +74,8 @@ function App() {
     return (
       <div className="min-h-screen bg-stone-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">🍗</div>
-          <div className="text-red-500 text-2xl animate-pulse">Loading...</div>
+          <div className="text-6xl mb-4 animate-float">🍗</div>
+          <div className="text-fire-red text-2xl animate-pulse">Loading...</div>
         </div>
       </div>
     );
@@ -76,7 +83,14 @@ function App() {
 
   return (
     <div className="min-h-screen bg-stone-900">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-stone-900/95 backdrop-blur-sm border-b border-red-700">
+      {/* Announcement Banner */}
+      <AnnouncementBanner />
+
+      {/* Floating Buttons */}
+      <WhatsAppFloatingButton phone={shopSettings.phone} />
+      <BackToTopButton />
+
+      <nav className="fixed top-10 left-0 right-0 z-50 bg-stone-900/95 backdrop-blur-sm border-b border-red-700">
         <div className="max-w-7xl mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <span className="text-3xl md:text-4xl">🍗</span>
@@ -91,9 +105,9 @@ function App() {
             >
               🔐 Admin
             </a>
-            <button 
+            <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-red-600 hover:bg-red-700 px-4 md:px-6 py-2 md:py-3 rounded-full font-bold flex items-center gap-2 transition-all hover:scale-105 text-sm md:text-base text-white"
+              className="relative bg-red-600 hover:bg-red-700 px-4 md:px-6 py-2 md:py-3 rounded-full font-bold flex items-center gap-2 transition-all hover:scale-105 active:scale-95 text-sm md:text-base text-white"
             >
               <span>🛒</span>
               <span className="hidden sm:inline">Order Now</span>
@@ -108,17 +122,24 @@ function App() {
       </nav>
 
       <Hero settings={shopSettings} />
+      <TrustBadges />
       <Menu items={menuItems} addToCart={addToCart} />
       <Location />
+      <TrustBadges />
       <Footer />
 
-      <Cart 
-        isOpen={isCartOpen} 
+      <Cart
+        isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cart={cart}
         removeFromCart={removeFromCart}
         updateQuantity={updateQuantity}
         cartTotal={cartTotal}
+      />
+
+      <CartSuccessAnimation
+        show={showCartSuccess}
+        onComplete={() => setShowCartSuccess(false)}
       />
     </div>
   );

@@ -82,7 +82,7 @@ function Stats() {
 
   return (
     <section id="stats-section" className="py-20 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-stone-900/50" />
       
       <div className="max-w-7xl mx-auto px-4 relative">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -92,15 +92,15 @@ function Stats() {
               className="group relative"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="absolute -inset-1 bg-gradient-to-r from-slate-700 to-slate-800 rounded-2xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
-              <div className="relative bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50 hover:border-red-500/30 transition-all hover:-translate-y-1">
+              <div className="absolute -inset-1 bg-gradient-to-r from-stone-700 to-stone-800 rounded-2xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
+              <div className="relative bg-stone-800/80 backdrop-blur-xl rounded-2xl p-6 border border-stone-700/50 hover:border-red-500/30 transition-all hover:-translate-y-1">
                 <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
                   <stat.icon className="w-7 h-7 text-white" />
                 </div>
                 <div className="text-3xl md:text-4xl font-bold text-white mb-1">
                   {stat.value}
                 </div>
-                <div className="text-slate-400 text-sm font-medium">{stat.label}</div>
+                <div className="text-amber-100/60 text-sm font-medium">{stat.label}</div>
               </div>
             </div>
           ))}

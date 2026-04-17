@@ -105,7 +105,7 @@ ${itemsText}
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-stone-900 h-full shadow-2xl border-l border-fire-red/30 flex flex-col">
+      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-stone-900 h-full shadow-2xl border-l border-fire-red/30 flex flex-col animate-slide-in-right">
         {/* Header */}
         <div className="bg-gradient-to-r from-fire-red to-red-800 text-white p-4 md:p-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -117,9 +117,9 @@ ${itemsText}
               <p className="text-red-200 text-xs md:text-sm">{cart.length} items</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors text-xl"
+            className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors text-xl active:scale-95"
           >
             ✕
           </button>
@@ -266,7 +266,7 @@ ${itemsText}
                 
                 <button
                   onClick={handlePlaceOrder}
-                  className="w-full bg-gradient-to-r from-fire-red to-red-700 hover:from-red-600 hover:to-red-800 text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all flex items-center justify-center gap-2 md:gap-3"
+                  className="w-full bg-gradient-to-r from-fire-red to-red-700 hover:from-red-600 hover:to-red-800 text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 md:gap-3"
                 >
                   📱 Order via WhatsApp
                 </button>

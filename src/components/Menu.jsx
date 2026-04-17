@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { categories } from '../data/menuItems';
+import ProductSkeleton from './ProductSkeleton';
+import { Heart } from 'lucide-react';
 
 function SpiceMeter({ level }) {
   if (!level || level === 0) return null;
@@ -18,10 +20,15 @@ function SpiceMeter({ level }) {
   );
 }
 
-function Menu({ items, addToCart }) {
+function Menu({ items, addToCart, isLoading = false }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [imageErrors, setImageErrors] = useState({});
   const [selectedWeights, setSelectedWeights] = useState({});
+  const [wishlist, setWishlist] = useState({});
+
+  const toggleWishlist = (itemId) => {
+    setWishlist(prev => ({ ...prev, [itemId]: !prev[itemId] }));
+  };
 
   const filteredItems = activeCategory === 'all' 
     ? items 
@@ -82,12 +89,12 @@ function Menu({ items, addToCart }) {
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10 md:mb-12">
+        <div className="relative flex flex-wrap justify-center gap-2 md:gap-3 mb-10 md:mb-12">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all text-sm md:text-base ${
-              activeCategory === 'all' 
-                ? 'bg-fire-red text-white scale-105' 
+            className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all duration-300 text-sm md:text-base ${
+              activeCategory === 'all'
+                ? 'bg-fire-red text-white scale-105 shadow-lg shadow-fire-red/30'
                 : 'bg-stone-800 text-amber-100/70 hover:bg-stone-700'
             }`}
           >
@@ -97,9 +104,9 @@ function Menu({ items, addToCart }) {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all text-sm md:text-base flex items-center gap-2 ${
-                activeCategory === cat.id 
-                  ? `${getCategoryColor(cat.id)} text-white scale-105` 
+              className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all duration-300 text-sm md:text-base flex items-center gap-2 ${
+                activeCategory === cat.id
+                  ? `${getCategoryColor(cat.id)} text-white scale-105 shadow-lg ${getCategoryColor(cat.id).replace('bg-', 'shadow-')}/30`
                   : 'bg-stone-800 text-amber-100/70 hover:bg-stone-700'
               }`}
             >
@@ -109,27 +116,32 @@ function Menu({ items, addToCart }) {
           ))}
         </div>
 
+        {/* Loading Skeleton */}
+        {isLoading && <ProductSkeleton />}
+
         {/* Products Grid */}
+        {!isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {filteredItems.map(item => {
+          {filteredItems.map((item, index) => {
             const weightOptions = getWeightOptions(item);
             const defaultWeight = getDefaultWeight(item);
             const currentWeight = selectedWeights[item.id] || defaultWeight;
-            
+
             return (
-              <div 
+              <div
                 key={item.id}
-                className={`bg-stone-800/50 border border-stone-700 rounded-2xl overflow-hidden transition-all hover:scale-[1.02] ${
+                className={`group bg-stone-800/50 border border-stone-700 rounded-2xl overflow-hidden transition-all hover:scale-[1.02] animate-fade-in-up ${
                   !item.inStock ? 'opacity-75' : 'hover:border-fire-red/50'
                 }`}
+                style={{ animationDelay: `${index * 75}ms` }}
               >
                 {/* Image Section */}
                 <div className="relative h-36 sm:h-40 md:h-44 overflow-hidden">
                   {item.image && !imageErrors[item.id] ? (
-                    <img 
-                      src={item.image} 
+                    <img
+                      src={item.image}
                       alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-500"
                       onError={() => handleImageError(item.id)}
                     />
                   ) : (
@@ -147,15 +159,34 @@ function Menu({ items, addToCart }) {
                     </div>
                   )}
 
+                  {/* Popular Badge */}
+                  {item.popular && (
+                    <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-fire-yellow text-dark-bg px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+                      🔥 Popular
+                    </div>
+                  )}
+
+                  {/* Wishlist Heart */}
+                  <button
+                    onClick={() => toggleWishlist(item.id)}
+                    className={`absolute top-2 right-2 md:top-3 md:right-3 p-1.5 md:p-2 rounded-full transition-all ${
+                      wishlist[item.id]
+                        ? 'bg-red-500 text-white'
+                        : 'bg-black/50 backdrop-blur-sm text-white hover:bg-red-500'
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 ${wishlist[item.id] ? 'fill-current' : ''}`} />
+                  </button>
+
                   {/* Price Badge */}
-                  <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-dark-bg/90 backdrop-blur-sm px-2 md:px-3 py-1 rounded-full">
+                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 bg-dark-bg/90 backdrop-blur-sm px-2 md:px-3 py-1 rounded-full">
                     <span className="text-fire-yellow font-bold text-sm md:text-base">
                       {formatPrice(item)}
                     </span>
                   </div>
 
                   {/* Category Badge */}
-                  <div className={`absolute top-2 md:top-3 left-2 md:left-3 px-2 py-0.5 md:py-1 rounded-full text-xs font-bold text-white ${getCategoryColor(item.category)}`}>
+                  <div className={`absolute bottom-2 left-2 md:bottom-3 md:left-3 px-2 py-0.5 md:py-1 rounded-full text-xs font-bold text-white ${getCategoryColor(item.category)}`}>
                     {item.category}
                   </div>
                 </div>
@@ -178,7 +209,7 @@ function Menu({ items, addToCart }) {
                           <button
                             key={opt}
                             onClick={() => handleWeightSelect(item.id, opt)}
-                            className={`px-2 md:px-3 py-1 rounded-lg text-xs md:text-sm font-semibold transition-all ${
+                            className={`px-2 md:px-3 py-1 rounded-lg text-xs md:text-sm font-semibold transition-all active:scale-95 ${
                               currentWeight === opt
                                 ? 'bg-fire-red text-white'
                                 : 'bg-stone-700 text-amber-100/70 hover:bg-stone-600'
@@ -195,7 +226,7 @@ function Menu({ items, addToCart }) {
                   {item.inStock ? (
                     <button
                       onClick={() => handleAddToCart(item)}
-                      className="w-full bg-fire-orange hover:bg-orange-600 px-4 py-2 md:py-3 rounded-full font-bold text-sm md:text-base transition-all hover:scale-105 flex items-center justify-center gap-2"
+                      className="w-full bg-fire-red hover:bg-red-700 px-4 py-2 md:py-3 rounded-full font-bold text-sm md:text-base transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
                     >
                       <span>🛒</span>
                       <span>Add ₹{(item.price * currentWeight).toFixed(0)}</span>
@@ -214,9 +245,10 @@ function Menu({ items, addToCart }) {
             );
           })}
         </div>
+        )}
 
         {/* Empty State */}
-        {filteredItems.length === 0 && (
+        {filteredItems.length === 0 && !isLoading && (
           <div className="text-center py-20">
             <p className="text-6xl mb-4">📦</p>
             <p className="text-amber-100/60 text-lg">No products in this category</p>
