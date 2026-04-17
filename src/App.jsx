@@ -15,6 +15,11 @@ import Stats from './components/Stats';
 import FAQ from './components/FAQ';
 import RecentOrderToast from './components/RecentOrderToast';
 import AdminPreview from './components/AdminPreview';
+import HowItWorks from './components/HowItWorks';
+import MarqueeBanner from './components/MarqueeBanner';
+import WhatsAppCTA from './components/WhatsAppCTA';
+import OurPromise from './components/OurPromise';
+import MobileBottomNav from './components/MobileBottomNav';
 import { storageService } from './services/storageService';
 import { initializeDatabase } from './services/initDb';
 
@@ -25,6 +30,14 @@ function App() {
   const [shopSettings, setShopSettings] = useState({ shopName: 'Chicken Sea', bannerUrl: '' });
   const [loading, setLoading] = useState(true);
   const [showCartSuccess, setShowCartSuccess] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Detect scroll for navbar animation
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const initApp = async () => {
@@ -73,51 +86,60 @@ function App() {
     const weight = item.selectedWeight || 1;
     return sum + (item.price * weight * item.quantity);
   }, 0);
-  
+
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-stone-900">
+    <div id="top" className="min-h-screen bg-stone-900 pb-16 md:pb-0">
       {/* Announcement Banner */}
       <AnnouncementBanner />
 
-      {/* Floating Buttons */}
+      {/* Floating Buttons (hidden on mobile — bottom nav handles it) */}
       <WhatsAppFloatingButton phone={shopSettings.phone} />
       <BackToTopButton />
 
-      <nav className="fixed top-10 left-0 right-0 z-50 bg-stone-900/95 backdrop-blur-sm border-b border-red-700">
-        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-3xl md:text-4xl">🍗</span>
-            <span className="font-bold text-2xl md:text-4xl text-red-600">
+      {/* Navbar */}
+      <nav className={`fixed top-10 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-stone-950/95 backdrop-blur-xl shadow-2xl shadow-black/30 border-b border-white/5'
+          : 'bg-stone-900/95 backdrop-blur-sm border-b border-red-700/40'
+      }`}>
+        <div className="max-w-7xl mx-auto px-3 md:px-6 py-2 md:py-3 flex justify-between items-center">
+          {/* Logo */}
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <span className="text-2xl md:text-3xl">🍗</span>
+            <span className="font-display font-black text-lg md:text-3xl text-red-500 leading-none">
               {shopSettings.shopName}
             </span>
           </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link 
-              to="/track" 
-              className="bg-stone-800 hover:bg-stone-700 p-2 md:px-4 md:py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
+
+          {/* Nav Actions */}
+          <div className="flex items-center gap-1.5 md:gap-3">
+            <Link
+              to="/track"
               title="Track Order"
+              className="w-9 h-9 md:w-auto md:h-auto md:px-4 md:py-2 bg-stone-800 hover:bg-stone-700 rounded-lg flex items-center justify-center md:gap-2 text-sm font-semibold text-white transition-colors"
             >
-              <span className="text-base md:text-lg">🔍</span>
+              <span className="text-base">🔍</span>
               <span className="hidden md:inline">Track</span>
             </Link>
-            <a 
-              href="/admin" 
-              className="bg-stone-800 hover:bg-stone-700 p-2 md:px-4 md:py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
-              title="Admin Login"
+            <a
+              href="/admin"
+              title="Admin Panel"
+              className="w-9 h-9 md:w-auto md:h-auto md:px-4 md:py-2 bg-stone-800 hover:bg-stone-700 rounded-lg flex items-center justify-center md:gap-2 text-sm font-semibold text-white transition-colors"
             >
-              <span className="text-base md:text-lg">🔐</span>
+              <span className="text-base">🔐</span>
               <span className="hidden md:inline">Admin</span>
             </a>
+            {/* Cart button — shown on all screens but hidden on mobile (bottom nav handles) */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-red-600 hover:bg-red-700 px-3 md:px-6 py-2 md:py-3 rounded-full font-bold flex items-center gap-2 transition-all hover:scale-105 active:scale-95 text-xs md:text-base text-white ml-1"
+              className="hidden md:flex relative bg-red-600 hover:bg-red-700 px-5 py-2.5 rounded-full font-bold items-center gap-2 transition-all hover:scale-105 active:scale-95 text-sm text-white"
             >
               <span>🛒</span>
-              <span className="hidden sm:inline">Order Now</span>
+              <span>Order Now</span>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-yellow-500 text-stone-900 w-5 h-5 md:w-7 md:h-7 rounded-full flex items-center justify-center font-bold text-[10px] md:text-xs">
+                <span className="absolute -top-2 -right-2 bg-yellow-400 text-stone-900 w-5 h-5 rounded-full flex items-center justify-center font-black text-xs">
                   {cartCount}
                 </span>
               )}
@@ -126,9 +148,14 @@ function App() {
         </div>
       </nav>
 
+      {/* Page Sections */}
       <Hero settings={shopSettings} />
+      <MarqueeBanner />
       <Stats />
+      <HowItWorks />
+      <OurPromise />
       <Menu items={menuItems} addToCart={addToCart} isLoading={loading} />
+      <WhatsAppCTA />
       {!loading && <Reviews />}
       {!loading && <AdminPreview />}
       {!loading && <FAQ />}
@@ -136,6 +163,7 @@ function App() {
       {!loading && <TrustBadges />}
       <Footer />
 
+      {/* Overlays & Modals */}
       <Cart
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -149,6 +177,14 @@ function App() {
         show={showCartSuccess}
         onComplete={() => setShowCartSuccess(false)}
       />
+
+      {/* Mobile Bottom Nav — replaces floating WhatsApp on mobile */}
+      <MobileBottomNav
+        cartCount={cartCount}
+        onCartOpen={() => setIsCartOpen(true)}
+      />
+
+      {/* Social Proof Toast */}
       <RecentOrderToast />
     </div>
   );

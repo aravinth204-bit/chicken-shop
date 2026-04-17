@@ -43,7 +43,7 @@ function RecentOrderToast() {
           initial={{ opacity: 0, x: -50, y: 50, scale: 0.8 }}
           animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-          className="fixed bottom-24 left-4 md:left-8 z-[100]"
+      className="fixed bottom-24 md:bottom-8 left-4 md:left-8 z-40"
         >
           <div className="bg-stone-900 shadow-2xl border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-xl">
             <div className="w-12 h-12 rounded-xl bg-fire-red/20 flex items-center justify-center text-fire-red">

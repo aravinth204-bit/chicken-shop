@@ -117,7 +117,7 @@ function Menu({ items, addToCart, isLoading = false }) {
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap items-center gap-3 mb-16 overflow-x-auto pb-4 no-scrollbar">
+        <div className="flex items-center gap-2 md:gap-3 mb-16 overflow-x-auto pb-3 no-scrollbar scrollbar-hide">
           <button
             onClick={() => setActiveCategory('all')}
             className={`whitespace-nowrap px-8 py-3.5 rounded-2xl font-bold transition-all duration-300 text-sm tracking-wide flex items-center gap-2 ${
@@ -234,12 +234,12 @@ function Menu({ items, addToCart, isLoading = false }) {
                     {/* Weight Selector */}
                     {item.inStock && (
                       <div className="space-y-3">
-                        <div className="flex flex-wrap gap-2">
-                          {weightOptions.map((opt) => (
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {weightOptions.slice(0, 6).map((opt) => (
                             <button
                               key={opt}
                               onClick={() => handleWeightSelect(item.id, opt)}
-                              className={`flex-1 min-w-[70px] py-2 rounded-xl text-[11px] font-bold transition-all active:scale-95 border ${
+                              className={`py-2 rounded-xl text-[11px] font-bold transition-all active:scale-95 border ${
                                 currentWeight === opt
                                   ? 'bg-white text-black border-white'
                                   : 'bg-stone-800 text-amber-100/40 border-white/5 hover:border-white/20'
