@@ -362,23 +362,35 @@ function AdminMenu() {
             item.inStock ? 'border-stone-700 hover:border-fire-red/50' : 'border-red-500/30 opacity-75'
           }`}>
             <div className="flex items-start justify-between mb-3">
-              <div className="w-16 h-16 bg-stone-700 rounded-xl flex items-center justify-center text-3xl overflow-hidden">
+              <div className="w-16 h-16 bg-stone-700 rounded-xl flex items-center justify-center text-3xl overflow-hidden relative">
                 {item.image ? (
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 ) : (
                   item.emoji
                 )}
+                {item.inStock && item.stock < 5 && (
+                  <div className="absolute inset-0 bg-yellow-500/20 flex items-center justify-center">
+                    <span className="bg-yellow-500 text-stone-900 text-[10px] font-black px-1 rounded">LOW</span>
+                  </div>
+                )}
               </div>
-              <button
-                onClick={() => toggleStock(item.id)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold ${
-                  item.inStock 
-                    ? 'bg-green-500/20 text-green-400' 
-                    : 'bg-red-500/20 text-red-400'
-                }`}
-              >
-                {item.inStock ? '✓ In Stock' : '✕ Out'}
-              </button>
+              <div className="flex flex-col items-end gap-1">
+                <button
+                  onClick={() => toggleStock(item.id)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold ${
+                    item.inStock 
+                      ? 'bg-green-500/20 text-green-400' 
+                      : 'bg-red-500/20 text-red-400'
+                  }`}
+                >
+                  {item.inStock ? '✓ In Stock' : '✕ Out'}
+                </button>
+                {item.inStock && (
+                  <span className={`text-[10px] font-bold ${item.stock < 5 ? 'text-yellow-400' : 'text-amber-100/40'}`}>
+                    Stock: {item.stock}{item.unit === 'piece' ? ' pcs' : ' kg'}
+                  </span>
+                )}
+              </div>
             </div>
             
             <h4 className="font-bold text-white mb-1">{item.name}</h4>

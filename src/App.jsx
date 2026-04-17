@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Hero from './components/Hero';
 import Menu from './components/Menu';
 import Cart from './components/Cart';
@@ -9,6 +10,7 @@ import WhatsAppFloatingButton from './components/WhatsAppFloatingButton';
 import BackToTopButton from './components/BackToTopButton';
 import AnnouncementBanner from './components/AnnouncementBanner';
 import CartSuccessAnimation from './components/CartSuccessAnimation';
+import Reviews from './components/Reviews';
 import { storageService } from './services/storageService';
 import { initializeDatabase } from './services/initDb';
 
@@ -70,17 +72,6 @@ function App() {
   
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-stone-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4 animate-float">🍗</div>
-          <div className="text-fire-red text-2xl animate-pulse">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-stone-900">
       {/* Announcement Banner */}
@@ -99,6 +90,12 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
+            <Link 
+              to="/track" 
+              className="bg-stone-800 hover:bg-stone-700 px-3 md:px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
+            >
+              <span className="hidden sm:inline">🔍</span> Track
+            </Link>
             <a 
               href="/admin" 
               className="bg-stone-800 hover:bg-stone-700 px-3 md:px-4 py-2 rounded-lg text-sm font-semibold text-white"
@@ -123,9 +120,10 @@ function App() {
 
       <Hero settings={shopSettings} />
       <TrustBadges />
-      <Menu items={menuItems} addToCart={addToCart} />
-      <Location />
-      <TrustBadges />
+      <Menu items={menuItems} addToCart={addToCart} isLoading={loading} />
+      {!loading && <Reviews />}
+      {!loading && <Location />}
+      {!loading && <TrustBadges />}
       <Footer />
 
       <Cart

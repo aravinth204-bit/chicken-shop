@@ -3,13 +3,17 @@ import { ChevronRight, MapPin, Phone, Clock } from 'lucide-react';
 import { storageService } from '../services/storageService';
 
 function Hero({ settings }) {
-  const [bannerUrl, setBannerUrl] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const bannerUrls = settings?.bannerUrls || [];
 
   useEffect(() => {
-    if (settings?.bannerUrl) {
-      setBannerUrl(settings.bannerUrl);
+    if (bannerUrls.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % bannerUrls.length);
+      }, 5000);
+      return () => clearInterval(interval);
     }
-  }, [settings]);
+  }, [bannerUrls.length]);
 
   const shopName = settings?.shopName || 'Chicken Sea';
   const phone = settings?.phone || '+91 98765 43210';
@@ -78,19 +82,40 @@ function Hero({ settings }) {
             </div>
           </div>
 
-          {/* Banner Image */}
-          <div className="relative animate-fade-in-up">
-            {bannerUrl ? (
-              <div className="relative group">
+          {/* Banner Image Slider */}
+<div className="relative animate-fade-in-up h-64 sm:h-80 md:h-96 lg:h-[450px]">
+            {bannerUrls.length > 0 ? (
+              <div className="relative h-full w-full group">
                 <div className="absolute -inset-4 bg-gradient-to-r from-fire-red to-orange-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity" />
-                <img 
-                  src={bannerUrl} 
-                  alt={shopName}
-                  className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[450px] object-cover rounded-2xl md:rounded-3xl shadow-2xl"
-                />
+                
+                {bannerUrls.map((url, index) => (
+                    <img 
+                        key={index}
+                        src={url} 
+                        alt={`${shopName} Banner ${index + 1}`}
+                        className={`absolute inset-0 w-full h-full object-cover rounded-2xl md:rounded-3xl shadow-2xl transition-all duration-1000 ${
+                            index === currentIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+                        }`}
+                    />
+                ))}
+                
+                {/* Dots Indicator */}
+                {bannerUrls.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                        {bannerUrls.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setCurrentIndex(index)}
+                                className={`w-2 h-2 rounded-full transition-all ${
+                                    index === currentIndex ? 'bg-white w-4' : 'bg-white/40'
+                                }`}
+                            />
+                        ))}
+                    </div>
+                )}
               </div>
             ) : (
-              <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[450px] bg-gradient-to-br from-stone-800 to-stone-900 border-2 border-dashed border-fire-red/50 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center">
+              <div className="relative w-full h-full bg-gradient-to-br from-stone-800 to-stone-900 border-2 border-dashed border-fire-red/50 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center">
                 <div className="w-20 h-20 md:w-28 md:h-28 bg-fire-red/20 rounded-full flex items-center justify-center mb-4 md:mb-6">
                   <span className="text-5xl md:text-7xl">🐔</span>
                 </div>

@@ -7,6 +7,7 @@ function Cart({ isOpen, onClose, cart, removeFromCart, updateQuantity, cartTotal
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerLocation, setCustomerLocation] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cod');
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [shopSettings, setShopSettings] = useState({ shopName: 'Chicken Sea', phone: '+91 98765 43210' });
 
@@ -36,44 +37,50 @@ function Cart({ isOpen, onClose, cart, removeFromCart, updateQuantity, cartTotal
       customerPhone,
       customerLocation,
       deliverySlot: selectedSlotData || null,
+      paymentMethod,
       status: 'pending',
       timestamp: new Date().toISOString()
     };
 
     await storageService.saveOrder(order);
 
-    const itemsText = cart.map(item => {
-      const weight = item.selectedWeight || 1;
-      const itemTotal = (item.price * weight).toFixed(0);
-      if (item.unit === 'piece') {
-        return `• ${item.name}\n  ${weight} × ₹${item.price} = ₹${itemTotal}`;
-      }
-      return `• ${item.name}\n  ${weight}kg × ₹${item.price}/kg = ₹${itemTotal}`;
-    }).join('\n\n');
+    const message = encodeURIComponent(`*NEW ORDER FROM CUSTOMER* \u{1F414}
+--------------------------------------------
+\u{1F6CD} *${shopSettings.shopName}*
+_Fresh Meat & Poultry_
+--------------------------------------------
 
-    const slotText = selectedSlotData ? `\n🕐 Pickup Time: ${selectedSlotData.label} (${selectedSlotData.time})` : '';
+*Order ID:* #${order.id.slice(-6)}
+*Date:* ${new Date().toLocaleDateString('en-IN')} | ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
 
-    const message = encodeURIComponent(`🏪 *${shopSettings.shopName}*
+*\u{1F464} CUSTOMER INFO*
+Name     : ${customerName}
+Phone    : ${customerPhone}
+Location : ${customerLocation}
+${selectedSlotData ? `Pickup   : *${selectedSlotData.label} (${selectedSlotData.time})*\n` : ''}
+*\u{1F4B3} PAYMENT*
+Method   : *${paymentMethod === 'online' ? 'Online (UPI/GPay)' : 'Cash on Delivery (COD)'}*
 
-━━━━━━━━━━━━━━━━━━━━━━━━
-📋 ORDER DETAILS
-━━━━━━━━━━━━━━━━━━━━━━━━
+--------------------------------------------
+*\u{1F4E6} ORDERED ITEMS*
+--------------------------------------------
+${cart.map(item => {
+    const weight = item.selectedWeight || 1;
+    const unitSuf = item.unit === 'piece' ? 'pc' : 'kg';
+    return `*${item.name}*
+${item.quantity} × ${weight}${unitSuf} = *₹${(item.price * weight * item.quantity).toFixed(0)}*`;
+}).join('\n\n')}
 
-👤 Name: ${customerName}
-📱 Phone: ${customerPhone}
-📍 Location: ${customerLocation}${slotText}
+--------------------------------------------
+*\u{1F4B5} BILL SUMMARY*
+--------------------------------------------
+Subtotal : ₹${cartTotal.toFixed(0)}
+Delivery : *FREE PICKUP*
+*TOTAL AMOUNT : ₹${cartTotal.toFixed(0)}*
+--------------------------------------------
 
-━━━━━━━━━━━━━━━━━━━━━━━━
-🛒 ITEMS
-━━━━━━━━━━━━━━━━━━━━━━━━
-${itemsText}
-
-━━━━━━━━━━━━━━━━━━━━━━━━
-💰 TOTAL: ₹${cartTotal.toFixed(0)}
-━━━━━━━━━━━━━━━━━━━━━━━━
-
-📍 Pickup from Shop
-🕐 Ordered: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`);
+_Thank you for choosing ${shopSettings.shopName}!_
+_Please confirm this order by replying 'OK'._`);
 
     const whatsappNumber = shopSettings.phone.replace(/[^0-9]/g, '');
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
@@ -233,6 +240,43 @@ ${itemsText}
                     className="w-full bg-stone-700 text-white px-3 md:px-4 py-2 md:py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-fire-red placeholder-amber-100/40 text-sm md:text-base"
                   />
                 </div>
+              </div>
+
+              {/* Payment Method */}
+              <div className="bg-stone-800/50 rounded-2xl p-4 md:p-6 border border-stone-700/50 mb-4 md:mb-6">
+                <h3 className="text-base md:text-lg font-bold text-white mb-3 md:mb-4">💳 Payment Method</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setPaymentMethod('cod')}
+                    className={`p-3 rounded-xl text-xs md:text-sm font-semibold transition-all flex flex-col items-center gap-1 ${
+                      paymentMethod === 'cod' 
+                        ? 'bg-fire-red text-white' 
+                        : 'bg-stone-700 text-amber-100/70 hover:bg-stone-600'
+                    }`}
+                  >
+                    <span>💵</span>
+                    Cash on Delivery
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod('online')}
+                    className={`p-3 rounded-xl text-xs md:text-sm font-semibold transition-all flex flex-col items-center gap-1 ${
+                      paymentMethod === 'online' 
+                        ? 'bg-fire-red text-white' 
+                        : 'bg-stone-700 text-amber-100/70 hover:bg-stone-600'
+                    }`}
+                  >
+                    <span>📱</span>
+                    Online (UPI/GPay)
+                  </button>
+                </div>
+                {paymentMethod === 'online' && (
+                  <div className="mt-4 p-3 bg-stone-900/50 rounded-xl border border-fire-red/20 text-center">
+                    <p className="text-amber-100/70 text-xs">
+                       Scan QR code at shop or pay to<br/>
+                       <span className="text-fire-yellow font-bold">{shopSettings.phone}</span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Pickup Time Slots */}

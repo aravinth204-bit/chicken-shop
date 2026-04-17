@@ -134,7 +134,7 @@ export const storageService = {
     const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
     return data ? JSON.parse(data) : {
       shopName: 'Chicken Sea',
-      bannerUrl: '',
+      bannerUrls: [],
       contactWhatsApp: '',
       address: 'Erode, Tamil Nadu',
       phone: '+91 98765 43210'

@@ -251,11 +251,10 @@ function SettingsPanel() {
     shopName: 'Chicken Sea',
     phone: '+91 98765 43210',
     address: 'Erode, Tamil Nadu',
-    bannerUrl: ''
+    bannerUrls: []
   });
   const [priceLogs, setPriceLogs] = useState([]);
   const [saved, setSaved] = useState(false);
-  const [bannerPreview, setBannerPreview] = useState('');
   const fileInputRef = React.useRef(null);
 
   useEffect(() => {
@@ -265,8 +264,15 @@ function SettingsPanel() {
 
   const loadSettings = async () => {
     const data = await storageService.getSettings();
-    setSettings(data);
-    setBannerPreview(data.bannerUrl || '');
+    // Migrating old bannerUrl if exists
+    if (data.bannerUrl && (!data.bannerUrls || data.bannerUrls.length === 0)) {
+        data.bannerUrls = [data.bannerUrl];
+        delete data.bannerUrl;
+    }
+    setSettings({
+        ...data,
+        bannerUrls: data.bannerUrls || []
+    });
   };
 
   const loadPriceLogs = async () => {
@@ -283,25 +289,33 @@ function SettingsPanel() {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 500 * 1024) {
-      alert('Image size should be less than 500KB');
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image size should be less than 2MB');
       return;
     }
+    
+    if (settings.bannerUrls.length >= 3) {
+      alert('Max 3 banner images allowed');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64 = reader.result;
-      setSettings({ ...settings, bannerUrl: base64 });
-      setBannerPreview(base64);
+      setSettings(prev => ({
+        ...prev,
+        bannerUrls: [...prev.bannerUrls, base64]
+      }));
+      if (fileInputRef.current) fileInputRef.current.value = '';
     };
     reader.readAsDataURL(file);
   };
 
-  const removeBanner = () => {
-    setSettings({ ...settings, bannerUrl: '' });
-    setBannerPreview('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const removeBanner = (index) => {
+    setSettings(prev => ({
+      ...prev,
+      bannerUrls: prev.bannerUrls.filter((_, i) => i !== index)
+    }));
   };
 
   return (
@@ -348,9 +362,19 @@ function SettingsPanel() {
 
       {/* Banner Upload */}
       <div className="bg-stone-800/50 rounded-2xl p-6 border border-stone-700">
-        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
-          🖼️ Shop Banner
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-white flex items-center gap-3">
+            🖼️ Shop Banner Slideshow ({settings.bannerUrls.length}/3)
+            </h2>
+            {settings.bannerUrls.length < 3 && (
+                <button 
+                   onClick={() => fileInputRef.current.click()}
+                   className="bg-fire-red hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all"
+                >
+                    + Add Image
+                </button>
+            )}
+        </div>
         
         <div className="space-y-4">
           <input
@@ -358,21 +382,35 @@ function SettingsPanel() {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="w-full bg-stone-700 border border-stone-600 text-white px-4 py-3 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-fire-red file:text-white file:font-semibold file:cursor-pointer"
+            className="hidden"
           />
-          <p className="text-amber-100/40 text-sm">Max 500KB - JPG, PNG supported</p>
+          <p className="text-amber-100/40 text-sm">Add up to 3 high-quality images for the home page slider. Max 2MB each.</p>
           
-          {bannerPreview && (
-            <div className="relative">
-              <img src={bannerPreview} alt="Banner" className="w-full h-48 object-cover rounded-xl" />
-              <button
-                onClick={removeBanner}
-                className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm"
-              >
-                Remove
-              </button>
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {settings.bannerUrls.map((url, index) => (
+                <div key={index} className="relative group rounded-xl overflow-hidden border border-stone-600 bg-stone-900 aspect-video md:aspect-square">
+                    <img src={url} alt={`Banner ${index + 1}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                            onClick={() => removeBanner(index)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-bold"
+                        >
+                            Remove
+                        </button>
+                    </div>
+                    <div className="absolute top-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-[10px] font-bold">
+                        Slide {index + 1}
+                    </div>
+                </div>
+            ))}
+            
+            {settings.bannerUrls.length === 0 && (
+                <div className="col-span-full py-12 border-2 border-dashed border-stone-700 rounded-2xl flex flex-col items-center justify-center text-amber-100/20">
+                    <span className="text-5xl mb-2">🖼️</span>
+                    <p>No banners uploaded yet</p>
+                </div>
+            )}
+          </div>
         </div>
       </div>
 
