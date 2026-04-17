@@ -6,17 +6,32 @@
   "background_color": "#0C0A09",
   "theme_color": "#DC2626",
   "description": "Order farm-fresh country chicken, goat meat, and organic eggs in Erode.",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/logo-badge.png",
+      "src": "/app-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/logo-badge.png",
+      "src": "/app-icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/products/country-chicken.png",
+      "type": "image/png",
+      "sizes": "400x300"
     }
   ]
 }
