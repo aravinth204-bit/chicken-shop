@@ -11,6 +11,10 @@ import BackToTopButton from './components/BackToTopButton';
 import AnnouncementBanner from './components/AnnouncementBanner';
 import CartSuccessAnimation from './components/CartSuccessAnimation';
 import Reviews from './components/Reviews';
+import Stats from './components/Stats';
+import FAQ from './components/FAQ';
+import RecentOrderToast from './components/RecentOrderToast';
+import AdminPreview from './components/AdminPreview';
 import { storageService } from './services/storageService';
 import { initializeDatabase } from './services/initDb';
 
@@ -92,24 +96,28 @@ function App() {
           <div className="flex items-center gap-2 md:gap-3">
             <Link 
               to="/track" 
-              className="bg-stone-800 hover:bg-stone-700 px-3 md:px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
+              className="bg-stone-800 hover:bg-stone-700 p-2 md:px-4 md:py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
+              title="Track Order"
             >
-              <span className="hidden sm:inline">🔍</span> Track
+              <span className="text-base md:text-lg">🔍</span>
+              <span className="hidden md:inline">Track</span>
             </Link>
             <a 
               href="/admin" 
-              className="bg-stone-800 hover:bg-stone-700 px-3 md:px-4 py-2 rounded-lg text-sm font-semibold text-white"
+              className="bg-stone-800 hover:bg-stone-700 p-2 md:px-4 md:py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
+              title="Admin Login"
             >
-              🔐 Admin
+              <span className="text-base md:text-lg">🔐</span>
+              <span className="hidden md:inline">Admin</span>
             </a>
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-red-600 hover:bg-red-700 px-4 md:px-6 py-2 md:py-3 rounded-full font-bold flex items-center gap-2 transition-all hover:scale-105 active:scale-95 text-sm md:text-base text-white"
+              className="relative bg-red-600 hover:bg-red-700 px-3 md:px-6 py-2 md:py-3 rounded-full font-bold flex items-center gap-2 transition-all hover:scale-105 active:scale-95 text-xs md:text-base text-white ml-1"
             >
               <span>🛒</span>
               <span className="hidden sm:inline">Order Now</span>
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-yellow-500 text-stone-900 w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center font-bold text-xs">
+                <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-yellow-500 text-stone-900 w-5 h-5 md:w-7 md:h-7 rounded-full flex items-center justify-center font-bold text-[10px] md:text-xs">
                   {cartCount}
                 </span>
               )}
@@ -119,9 +127,11 @@ function App() {
       </nav>
 
       <Hero settings={shopSettings} />
-      <TrustBadges />
+      <Stats />
       <Menu items={menuItems} addToCart={addToCart} isLoading={loading} />
       {!loading && <Reviews />}
+      {!loading && <AdminPreview />}
+      {!loading && <FAQ />}
       {!loading && <Location />}
       {!loading && <TrustBadges />}
       <Footer />
@@ -139,6 +149,7 @@ function App() {
         show={showCartSuccess}
         onComplete={() => setShowCartSuccess(false)}
       />
+      <RecentOrderToast />
     </div>
   );
 }

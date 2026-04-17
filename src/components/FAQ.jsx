@@ -1,71 +1,71 @@
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Minus } from 'lucide-react';
+
+const faqs = [
+  {
+    question: "How fresh is your chicken?",
+    answer: "We source our poultry daily from local farms. Our 'Fresh Daily' guarantee means the meat you receive was processed within hours of delivery."
+  },
+  {
+    question: "What are the delivery timings?",
+    answer: "We deliver in multiple slots: Morning (8-10 AM), Late Morning (10-12 PM), Afternoon (12-2 PM), and Evening (5-7 PM). You can choose your preferred slot during checkout."
+  },
+  {
+    question: "Do you provide cleaned and cut meat?",
+    answer: "Yes, all our products are professionally cleaned and cut according to standard requirements (curry cut, biryani cut, etc.) at no extra cost."
+  },
+  {
+    question: "Is there a minimum order value?",
+    answer: "There is no strict minimum order value, but we offer free delivery for orders above ₹500."
+  }
+];
 
 function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const faqs = [
-    {
-      question: 'What are your shop timings?',
-      answer: 'We are open from 6:00 AM to 9:00 PM, all 7 days of the week. We are closed only on major public holidays.'
-    },
-    {
-      question: 'Do you provide home delivery?',
-      answer: 'Yes! We provide same-day delivery within Erode. Delivery charges may vary based on your location. Contact us via WhatsApp for delivery details.'
-    },
-    {
-      question: 'How fresh are your products?',
-      answer: 'All our products are sourced fresh daily from verified farms. We maintain strict quality standards and ensure proper storage. Most products are processed on the same day of delivery.'
-    },
-    {
-      question: 'Can I order via WhatsApp?',
-      answer: 'Absolutely! You can send your order list to +91 8778017989 on WhatsApp. We will confirm the availability and total amount. Payment can be made on delivery.'
-    },
-    {
-      question: 'Do you offer bulk orders?',
-      answer: 'Yes, we offer special pricing for bulk orders. Whether its for a wedding, function, or restaurant supply, contact us for competitive bulk rates.'
-    },
-    {
-      question: 'What payment methods do you accept?',
-      answer: 'We accept Cash, UPI (Google Pay, PhonePe, Paytm), and bank transfers. For first-time customers, we recommend paying on delivery.'
-    }
-  ];
-
   return (
-    <section id="faq" className="py-20 bg-slate-900">
-      <div className="max-w-4xl mx-auto px-4">
+    <section className="py-20 bg-dark-bg/50">
+      <div className="max-w-3xl mx-auto px-4">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-slate-800 text-red-400 px-4 py-2 rounded-full mb-4">
-            <HelpCircle className="w-5 h-5" />
-            <span className="font-medium">HELP CENTER</span>
-          </div>
-          <h2 className="text-4xl font-bold text-white mb-4">Frequently Asked Questions</h2>
-          <p className="text-slate-400">Find answers to common questions</p>
+          <h2 className="font-display text-4xl md:text-5xl text-white mb-4">
+            FREQUENTLY <span className="text-fire-red">ASKED</span>
+          </h2>
+          <p className="text-amber-100/60 font-sans">Everything you need to know about our service</p>
         </div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div 
               key={index}
-              className="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700/50 overflow-hidden hover:border-red-500/30 transition-all"
+              className="border border-stone-800 rounded-2xl overflow-hidden bg-stone-900/50 backdrop-blur-sm"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between p-6 text-left"
+                className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors hover:bg-stone-800/50"
               >
-                <span className="font-semibold text-white pr-4">{faq.question}</span>
-                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                  openIndex === index ? 'bg-red-600 text-white rotate-180' : 'bg-slate-700 text-slate-400'
-                }`}>
-                  <ChevronDown className="w-5 h-5" />
-                </div>
+                <span className="text-lg font-semibold text-amber-100">{faq.question}</span>
+                {openIndex === index ? (
+                  <Minus className="w-5 h-5 text-fire-red" />
+                ) : (
+                  <Plus className="w-5 h-5 text-fire-red" />
+                )}
               </button>
               
-              {openIndex === index && (
-                <div className="px-6 pb-6">
-                  <p className="text-slate-400 leading-relaxed">{faq.answer}</p>
-                </div>
-              )}
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  >
+                    <div className="px-6 pb-5 text-amber-100/70 leading-relaxed font-sans">
+                      {faq.answer}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>

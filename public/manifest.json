@@ -1,0 +1,21 @@
+{
+  "name": "Chicken Sea Poultry Shop",
+  "short_name": "Chicken Sea",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0C0A09",
+  "theme_color": "#DC2626",
+  "description": "Order farm-fresh country chicken, goat meat, and organic eggs in Erode.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3067/3067824.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3067/3067824.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import { APP_CONFIG } from '../config';
+
 /**
  * Chicken Sea - Centralized Storage Service v2
  * Cloud-Ready Architecture with Stock, Roles, and Delivery Slots
@@ -48,7 +50,6 @@ export const storageService = {
     const products = await this.getProducts();
     const index = products.findIndex(p => p.id === productId);
     if (index !== -1) {
-      // Log price changes
       if (updatedFields.price && updatedFields.price !== products[index].price) {
         await this.logPriceChange(products[index].name, products[index].price, updatedFields.price);
       }
@@ -85,7 +86,6 @@ export const storageService = {
       newPrice,
       timestamp: new Date().toISOString()
     });
-    // Keep only last 50 logs
     localStorage.setItem(STORAGE_KEYS.PRICE_LOGS, JSON.stringify(logs.slice(0, 50)));
   },
 
@@ -133,11 +133,11 @@ export const storageService = {
   async getSettings() {
     const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
     return data ? JSON.parse(data) : {
-      shopName: 'Chicken Sea',
+      shopName: APP_CONFIG.DEFAULT_SHOP_NAME,
       bannerUrls: [],
       contactWhatsApp: '',
-      address: 'Erode, Tamil Nadu',
-      phone: '+91 98765 43210'
+      address: APP_CONFIG.DEFAULT_ADDRESS,
+      phone: APP_CONFIG.PRIMARY_PHONE
     };
   },
 
@@ -202,8 +202,6 @@ export const storageService = {
       return { success: false, error: 'Current password is incorrect' };
     }
     
-    // In a real app, this would update a database
-    // For localStorage demo, we'll use a separate key
     localStorage.setItem('chicken_sea_admin_new_password', newPassword);
     return { success: true };
   }

@@ -18,11 +18,12 @@ export const defaultProducts = [
     unit: "kg",
     weightOptions: [0.5, 1, 1.5, 2, 2.5, 3],
     defaultWeight: 1,
-    image: "https://images.unsplash.com/photo-1547928576-b822bc410bdf?w=400&h=300&fit=crop",
+    image: "/products/country-chicken.png",
     emoji: "🐔",
     inStock: true,
     stock: 50,
-    spiceLevel: 1
+    spiceLevel: 1,
+    popular: true
   },
   {
     id: uuidv4(),
@@ -95,11 +96,12 @@ export const defaultProducts = [
     unit: "kg",
     weightOptions: [0.25, 0.5, 1, 1.5, 2],
     defaultWeight: 0.5,
-    image: "https://images.unsplash.com/photo-1602470520998-f4a52199a3d6?w=400&h=300&fit=crop",
+    image: "/products/goat-meat.png",
     emoji: "🐐",
     inStock: true,
     stock: 30,
-    spiceLevel: 2
+    spiceLevel: 2,
+    popular: true
   },
   {
     id: uuidv4(),
