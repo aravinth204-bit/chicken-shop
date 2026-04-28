@@ -2,15 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { categories } from '../data/menuItems';
 import ProductSkeleton from './ProductSkeleton';
-import { Heart, Search, ShoppingCart, Info, Star } from 'lucide-react';
+import { Heart, Search, ShoppingCart, Star } from 'lucide-react';
 
 function SpiceMeter({ level }) {
   if (!level || level === 0) return null;
   return (
     <div className="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg">
       {[...Array(3)].map((_, i) => (
-        <span 
-          key={i} 
+        <span
+          key={i}
           className={`text-[10px] transform transition-transform ${i < level ? 'opacity-100 scale-110' : 'opacity-20 scale-90'}`}
         >
           🌶️
@@ -28,20 +28,20 @@ function Menu({ items, addToCart, isLoading = false }) {
   const [wishlist, setWishlist] = useState({});
 
   const toggleWishlist = (itemId) => {
-    setWishlist(prev => ({ ...prev, [itemId]: !prev[itemId] }));
+    setWishlist((prev) => ({ ...prev, [itemId]: !prev[itemId] }));
   };
 
   const filteredItems = useMemo(() => {
-    return items.filter(item => {
+    return items.filter((item) => {
       const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
-      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           item.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
   }, [items, activeCategory, searchQuery]);
 
   const handleImageError = (itemId) => {
-    setImageErrors(prev => ({ ...prev, [itemId]: true }));
+    setImageErrors((prev) => ({ ...prev, [itemId]: true }));
   };
 
   const getCategoryColor = (categoryId) => {
@@ -49,34 +49,27 @@ function Menu({ items, addToCart, isLoading = false }) {
       chicken: 'from-red-500 to-red-700',
       goat: 'from-amber-700 to-orange-900',
       duck: 'from-red-600 to-red-800',
-      eggs: 'from-yellow-400 to-yellow-600'
+      eggs: 'from-yellow-400 to-yellow-600',
     };
     return colors[categoryId] || 'from-stone-600 to-stone-800';
   };
 
   const formatPrice = (item) => {
-    if (item.unit === 'piece') {
-      return `₹${item.price}/pc`;
-    }
-    return `₹${item.price}/kg`;
+    if (item.unit === 'kg') return `₹${item.price}/kg`;
+    if (item.unit === 'dozen') return `₹${item.price}/dozen`;
+    return `₹${item.price}/${item.unit || 'item'}`;
   };
 
   const getWeightOptions = (item) => {
-    if (item.unit === 'piece') {
-      return item.unitOptions || [1, 2, 3, 6, 12];
-    }
-    return item.weightOptions || [0.5, 1, 1.5, 2];
+    return item.unitOptions || item.weightOptions || [1];
   };
 
   const getDefaultWeight = (item) => {
-    if (item.unit === 'piece') {
-      return item.defaultUnit || 1;
-    }
-    return item.defaultWeight || 1;
+    return item.defaultUnit || item.defaultWeight || 1;
   };
 
   const handleWeightSelect = (itemId, weight) => {
-    setSelectedWeights(prev => ({ ...prev, [itemId]: weight }));
+    setSelectedWeights((prev) => ({ ...prev, [itemId]: weight }));
   };
 
   const handleAddToCart = (item) => {
@@ -85,220 +78,164 @@ function Menu({ items, addToCart, isLoading = false }) {
   };
 
   return (
-    <section id="menu" className="py-24 bg-stone-900 overflow-hidden">
+    <section id="menu" className="py-24 bg-dark-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
           <div className="space-y-4 text-center lg:text-left">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="font-display text-5xl md:text-7xl font-bold text-white tracking-tight"
+              className="text-5xl md:text-7xl font-black tracking-tight"
             >
-              PREMIUM <span className="text-fire-red">CUTS</span>
+              Chicken menu made for quick ordering.
             </motion.h2>
-            <p className="text-amber-100/60 font-sans max-w-lg text-lg">
-              Explore our selection of farm-fresh poultry and premium meats, processed with the highest hygiene standards.
+            <p className="text-amber-100/70 max-w-xl text-lg">
+              Search by category, find the best combos, and add premium meals to your cart with one click.
             </p>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative w-full lg:w-96 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 group-focus-within:text-fire-red transition-colors" />
-            <input 
+          <div className="relative w-full lg:w-96">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
+            <input
               type="text"
-              placeholder="Search chicken, eggs..."
+              placeholder="Search grill, bucket or combo"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-stone-800/50 backdrop-blur-xl border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-fire-red/50 focus:ring-1 focus:ring-fire-red/20 transition-all font-sans"
+              className="w-full rounded-3xl border border-white/10 bg-stone-950/80 py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:border-fire-red focus:outline-none focus:ring-2 focus:ring-fire-red/20"
             />
           </div>
         </div>
 
-        {/* Category Filter */}
-        <div className="flex items-center gap-2 md:gap-3 mb-16 overflow-x-auto pb-3 no-scrollbar scrollbar-hide">
+        <div className="mb-16 flex flex-wrap items-center gap-3 overflow-x-auto pb-2 no-scrollbar scrollbar-hide">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`whitespace-nowrap px-8 py-3.5 rounded-2xl font-bold transition-all duration-300 text-sm tracking-wide flex items-center gap-2 ${
+            className={`rounded-2xl px-6 py-3 text-sm font-bold transition ${
               activeCategory === 'all'
-                ? 'bg-fire-red text-white shadow-2xl shadow-red-900/40'
-                : 'bg-stone-800/50 text-amber-100/50 hover:bg-stone-800 hover:text-amber-100 border border-white/5'
+                ? 'bg-fire-red text-white shadow-2xl shadow-red-900/30'
+                : 'bg-stone-950/80 text-amber-100/80 hover:bg-stone-900'
             }`}
           >
-            All Products
+            All
           </button>
-          {categories.map(cat => (
+          {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`whitespace-nowrap px-8 py-3.5 rounded-2xl font-bold transition-all duration-300 text-sm tracking-wide flex items-center gap-2 ${
+              className={`rounded-2xl px-6 py-3 text-sm font-bold transition ${
                 activeCategory === cat.id
-                  ? 'bg-red-900 text-white border border-red-500/30'
-                  : 'bg-stone-800/50 text-amber-100/50 hover:bg-stone-800 hover:text-amber-100 border border-white/5'
+                  ? 'bg-fire-red text-white shadow-2xl shadow-red-900/30'
+                  : 'bg-stone-950/80 text-amber-100/80 hover:bg-stone-900'
               }`}
             >
-              <span className="text-lg">{cat.emoji}</span>
+              <span className="mr-2">{cat.emoji}</span>
               {cat.name}
             </button>
           ))}
         </div>
 
-        {/* Loading Skeleton */}
-        {isLoading && <ProductSkeleton />}
+        {isLoading ? (
+          <ProductSkeleton />
+        ) : (
+          <motion.div layout className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
+            <AnimatePresence>
+              {filteredItems.map((item) => {
+                const weightOptions = getWeightOptions(item);
+                const defaultWeight = getDefaultWeight(item);
+                const currentWeight = selectedWeights[item.id] || defaultWeight;
 
-        {/* Products Grid */}
-        <motion.div 
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-        >
-          <AnimatePresence>
-            {!isLoading && filteredItems.map((item) => {
-              const weightOptions = getWeightOptions(item);
-              const defaultWeight = getDefaultWeight(item);
-              const currentWeight = selectedWeights[item.id] || defaultWeight;
-
-              return (
-                <motion.div
-                  key={item.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  className={`group relative bg-stone-900 border border-white/5 rounded-[2rem] overflow-hidden transition-all hover:border-fire-red/30 shadow-xl ${
-                    !item.inStock ? 'opacity-80 grayscale-[0.5]' : ''
-                  }`}
-                >
-                  {/* Image Section */}
-                  <div className="relative h-60 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 to-transparent z-10" />
-                    
-                    {item.image && !imageErrors[item.id] ? (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                        onError={() => handleImageError(item.id)}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-stone-800 flex items-center justify-center text-7xl">
-                        {item.emoji || '🍗'}
-                      </div>
-                    )}
-                    
-                    {/* Badges */}
-                    <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                       {item.popular && (
-                        <div className="bg-fire-yellow text-stone-950 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-tighter flex items-center gap-1 shadow-lg ring-1 ring-white/20">
-                          <Star className="w-3 h-3 fill-current" />
-                          Best Seller
-                        </div>
+                return (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25 }}
+                    className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-stone-950/80 shadow-2xl shadow-black/20 transition hover:-translate-y-1 ${
+                      !item.inStock ? 'opacity-70 grayscale-[0.45]' : ''
+                    }`}
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                      {item.image && !imageErrors[item.id] ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          onError={() => handleImageError(item.id)}
+                          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-stone-800 text-6xl">{item.emoji || '🍗'}</div>
                       )}
-                      <div className={`bg-gradient-to-r ${getCategoryColor(item.category)} text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-tighter shadow-lg`}>
-                        {item.category}
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent" />
+                      <div className="absolute top-4 left-4 flex flex-col gap-2">
+                        {item.popular && (
+                          <span className="inline-flex items-center gap-2 rounded-full bg-fire-yellow px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-stone-950 shadow-lg">
+                            <Star className="h-3 w-3" /> Best Seller
+                          </span>
+                        )}
+                        <span className={`inline-flex rounded-full bg-gradient-to-r ${getCategoryColor(item.category)} px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-lg`}>
+                          {item.category}
+                        </span>
                       </div>
+                      <button
+                        onClick={() => toggleWishlist(item.id)}
+                        className={`absolute right-4 top-4 rounded-2xl border border-white/10 bg-black/30 p-3 text-white transition ${wishlist[item.id] ? 'bg-fire-red text-white' : 'hover:bg-white hover:text-black'}`}
+                      >
+                        <Heart className="h-4 w-4" />
+                      </button>
                     </div>
 
-                    {/* Wishlist */}
-                    <button
-                      onClick={() => toggleWishlist(item.id)}
-                      className={`absolute top-4 right-4 z-20 p-2.5 rounded-xl transition-all backdrop-blur-md border border-white/10 ${
-                        wishlist[item.id]
-                          ? 'bg-red-500 text-white'
-                          : 'bg-black/30 text-white hover:bg-white hover:text-black'
-                      }`}
-                    >
-                      <Heart className={`w-4 h-4 ${wishlist[item.id] ? 'fill-current' : ''}`} />
-                    </button>
+                    <div className="space-y-4 p-6">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="text-2xl font-bold text-white">{item.name}</h3>
+                          <p className="mt-2 text-sm text-amber-100/70 leading-relaxed">{item.description}</p>
+                        </div>
+                        <SpiceMeter level={item.spiceLevel} />
+                      </div>
 
-                    {/* Price Overlay */}
-                    <div className="absolute bottom-4 left-4 z-20">
-                       <p className="text-white font-display text-2xl font-black">
-                         {formatPrice(item)}
-                       </p>
-                    </div>
-                  </div>
-                  
-                  {/* Content Section */}
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-xl font-bold text-white group-hover:text-fire-red transition-colors">{item.name}</h3>
-                      <SpiceMeter level={item.spiceLevel} />
-                    </div>
-                    
-                    <p className="text-amber-100/50 text-sm font-sans leading-relaxed line-clamp-2">
-                      {item.description}
-                    </p>
-                    
-                    {/* Weight Selector */}
-                    {item.inStock && (
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-3 gap-1.5">
+                      {item.inStock && (
+                        <div className="grid grid-cols-3 gap-2">
                           {weightOptions.slice(0, 6).map((opt) => (
                             <button
                               key={opt}
                               onClick={() => handleWeightSelect(item.id, opt)}
-                              className={`py-2 rounded-xl text-[11px] font-bold transition-all active:scale-95 border ${
+                              className={`rounded-2xl border px-3 py-2 text-[12px] font-semibold transition ${
                                 currentWeight === opt
                                   ? 'bg-white text-black border-white'
-                                  : 'bg-stone-800 text-amber-100/40 border-white/5 hover:border-white/20'
+                                  : 'bg-stone-900 text-amber-100/70 border-white/10 hover:border-white/30'
                               }`}
                             >
-                              {opt}{item.unit === 'piece' ? 'pc' : 'kg'}
+                              {opt} {item.unit}
                             </button>
                           ))}
                         </div>
-                      </div>
-                    )}
-                    
-                    {/* Add to Cart Button */}
-                    <div className="pt-2">
-                      {item.inStock ? (
-                        <button
-                          onClick={() => handleAddToCart(item)}
-                          className="w-full bg-fire-red hover:bg-red-700 text-white px-6 py-4 rounded-2xl font-bold text-sm transition-all hover:shadow-2xl hover:shadow-red-900/40 active:scale-95 flex items-center justify-center gap-3"
-                        >
-                          <ShoppingCart className="w-4 h-4" />
-                          <span>Add to Cart • ₹{(item.price * currentWeight).toFixed(0)}</span>
-                        </button>
-                      ) : (
-                        <div className="w-full bg-stone-800/50 border border-white/5 px-6 py-4 rounded-2xl font-bold text-sm text-amber-100/20 text-center cursor-not-allowed">
-                          SOLD OUT
-                        </div>
                       )}
+
+                      <div className="space-y-3">
+                        <p className="text-xl font-bold text-white">{formatPrice(item)}</p>
+                        <button
+                          type="button"
+                          onClick={() => handleAddToCart(item)}
+                          className="w-full rounded-3xl bg-fire-red px-6 py-4 text-sm font-bold text-white transition hover:bg-red-700"
+                        >
+                          Add to cart • ₹{(item.price * currentWeight).toFixed(0)}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Shimmer Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* Empty State */}
-        {!isLoading && filteredItems.length === 0 && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-32 space-y-6"
-          >
-            <div className="w-24 h-24 bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-8">
-              <Search className="w-10 h-10 text-white/20" />
-            </div>
-            <h3 className="text-2xl font-bold text-white">No items found</h3>
-            <p className="text-amber-100/50 max-w-xs mx-auto">
-              We couldn't find anything matching "{searchQuery}". Try a different category or clear the search.
-            </p>
-            <button 
-              onClick={() => {setSearchQuery(''); setActiveCategory('all');}}
-              className="text-fire-red font-bold hover:underline"
-            >
-              Reset Filters
-            </button>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </motion.div>
+        )}
+
+        {!isLoading && filteredItems.length === 0 && (
+          <div className="rounded-[2rem] border border-white/10 bg-stone-950/80 p-12 text-center text-amber-100/70">
+            <p className="text-2xl font-bold text-white">No items match your search</p>
+            <p className="mt-4">Try a broader term or choose another category to see more meals.</p>
+          </div>
         )}
       </div>
     </section>
